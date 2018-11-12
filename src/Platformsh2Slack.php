@@ -103,7 +103,14 @@ class Platformsh2Slack {
     $platformsh = json_decode($json);
 
     if (empty($platformsh)) {
-      throw new \RuntimeException('Invalid Platform.sh webhook payload');
+      var_dump($this->request->query->get('file'));
+      if ($this->request->query->get('file')) {
+        $json = file_get_contents($this->request->query->get('file'));
+        $platformsh = json_decode($json);
+      }
+      else {
+        throw new \RuntimeException('Invalid Platform.sh webhook payload');
+      }
     }
 
     // Author name
@@ -411,7 +418,7 @@ class Platformsh2Slack {
 
     $this->processPlatformshPayload();
 
-    $this->slack->send($this->slack_text);
+    $this->slack->to('@james')->send($this->slack_text);
 
     // Make sure this request is never cached
     $response = new Response();
